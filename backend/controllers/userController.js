@@ -47,5 +47,36 @@ const createUser = asyncHandler(async (req,res) => {
      }
 });
 
+const loginUser = asyncHandler(async (req,res) => {
+     const { email, password } = req.body;
 
-export {createUser};
+     const existingUser = await User.findOne({ email });
+
+     if(existingUser) {
+          const isPasswordValid = await bcrypt.compare(password, existingUser.password);
+
+          if(isPasswordValid) {
+               generateToken(res, existingUser._id);
+
+               
+               return res.status(201).json({
+                    _id: existingUser._id,
+                    username: existingUser.username,
+                    email: existingUser.email,
+                    password: existingUser.password,
+                    isAdmin: existingUser.isAdmin,
+               });
+          } 
+          else 
+          {
+               res.status(401).send("Incorrect Login credential");
+          }
+     }
+     else 
+     {
+          res.status(401).send("Incorrect Login credential");
+     }
+})
+
+
+export {createUser, loginUser};
