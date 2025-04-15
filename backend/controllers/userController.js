@@ -164,4 +164,17 @@ const deleteUser = asyncHandler( async (req,res) => {
      }
 })
 
-export {createUser, loginUser, logoutUser, getAllUsers, getCurrentUserProfile, updateCurrentUserProfile, deleteUser};
+const getUserById = asyncHandler(async (req,res) => {
+     // not going to fetch password
+     const user = await User.findById(req.params.id).select('-password');
+
+     if(user){
+          res.json(user)
+     }
+     else{
+          res.status(404)
+          throw new Error('User not found')
+     }
+})
+
+export {createUser, loginUser, logoutUser, getAllUsers, getCurrentUserProfile, updateCurrentUserProfile, deleteUser, getUserById};
